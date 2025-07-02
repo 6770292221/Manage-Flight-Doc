@@ -1,187 +1,75 @@
-# ✈️ Manage Flight API Documentation
+## 🛡️ Authentication Flow (Login & OTP Verification)
 
-This document provides detailed information on how to use the **Manage Flight API**, including endpoints for creating, retrieving, updating, and deleting airport data using Postman.
+### 🔐 1. Login to Receive OTP
+Send a POST request to initiate the login process. This will trigger the system to send an OTP to the user’s email.
 
----
-
-## 🌐 Base URL
-
+**Request**
 ```
-{{URI}}/api/v1/airport-core-api/airports
-```
-
-Environment Variable:
-- `{{URI}}` = Base URL (e.g., `https://flight-booking-airline.onrender.com`)
-- `{{token}}` = Bearer token used in Authorization header
-
----
-
-## 🔐 Authentication
-
-All endpoints require Bearer Token authentication.
-
-In Postman:
-- Go to `Authorization` tab
-- Set **Auth Type** to `Bearer Token`
-- Token: `{{token}}`
-
-Postman will automatically insert the token as:
-
-```
-Authorization: Bearer {{token}}
+POST /api/v1/user-core-api/auth/login
+Content-Type: application/json
 ```
 
----
-
-## 📬 Endpoints
-
-### 1. ➕ Create Airport
-
-**POST** `/airports`
-
-- **Headers**: `Authorization: Bearer {{token}}`
-- **Body (JSON)**:
+**Body**
 ```json
 {
-  "iataCode": "BKK{{randomInt}}",
-  "cityName": "Bangkok",
-  "airportName": "Suvarnabhumi Airport",
-  "country": "Thailand",
-  "timezone": "Asia/Bangkok"
+  "email": "aphirak_2008@hotmail.com",
+  "password": "Com@sci54"
 }
 ```
 
-- **Response**:
+**Response**
 ```json
 {
   "status": "success",
-  "code": "AIR_1007",
-  "message": "Airport created successfully",
+  "code": "OTP_1001",
+  "message": "A one-time password (OTP) has been successfully sent to your email address.",
   "data": {
-    "_id": "string",
-    ...
+    "userId": "6804a760601850de6fc4ede9",
+    "email": "aphirak_2008@hotmail.com"
   }
 }
 ```
 
 ---
 
-### 2. 📖 Get All Airports
+### ✅ 2. Verify OTP to Receive Bearer Token
+Send the received OTP and `userId` to this endpoint to get your `token`.
 
-**GET** `/airports`
+**Request**
+```
+POST /api/v1/user-core-api/auth/email-otp/verify
+Content-Type: application/json
+```
 
-- **Headers**: `Authorization: Bearer {{token}}`
+**Body**
+```json
+{
+  "userId": "6804a760601850de6fc4ede9",
+  "otp": "123456"
+}
+```
 
-- **Response**:
+**Response**
 ```json
 {
   "status": "success",
-  "code": "AIR_1004",
-  "message": "Airports retrieved successfully.",
+  "message": "OTP verified successfully.",
   "data": {
-    "items": [ ... ]
+    "token": "<YOUR_BEARER_TOKEN>",
+    "userId": "6804a760601850de6fc4ede9",
+    "email": "aphirak_2008@hotmail.com",
+    "isAdmin": true,
+    "verified": true
   }
 }
 ```
 
 ---
 
-### 3. 🔍 Get Airport by ID
+### 📌 Using the Token
+Once you have the `token`, include it as a Bearer Token in the **Authorization** header in subsequent requests.
 
-**GET** `/airports/:id`
-
-- **Headers**: `Authorization: Bearer {{token}}`
-
-- **Response**:
-```json
-{
-  "status": "success",
-  "code": "AIR_1003",
-  "message": "Airport retrieved successfully.",
-  "data": { ... }
-}
+**Header Example**
 ```
-
----
-
-### 4. 📝 Update Airport
-
-**PATCH** `/airports/:id`
-
-- **Headers**: `Authorization: Bearer {{token}}`
-- **Body (JSON)**:
-```json
-{
-  "iataCode": "BKK411",
-  "cityName": "Bangkok",
-  "airportName": "Suvarnabhumi Airport",
-  "country": "Thailand",
-  "timezone": "Asia/Bangkok"
-}
+Authorization: Bearer <YOUR_BEARER_TOKEN>
 ```
-
-- **Response**:
-```json
-{
-  "status": "success",
-  "code": "AIR_1009",
-  "message": "Airport updated successfully",
-  "data": { ... }
-}
-```
-
----
-
-### 5. ❌ Delete Airport
-
-**DELETE** `/airports/:id`
-
-- **Headers**: `Authorization: Bearer {{token}}`
-
-- **Response**:
-```json
-{
-  "status": "success",
-  "code": "AIR_1010",
-  "message": "Airport deleted successfully"
-}
-```
-
----
-
-## 🚀 Running Tests with Newman
-
-To run the collection via Newman CLI:
-
-```bash
-newman run Manage-Flight.postman_collection.json -e environment.json
-```
-
-Ensure `environment.json` contains variables for `{{URI}}` and `{{token}}`.
-
----
-
-## 🧪 Common Postman Tests (Example)
-
-```js
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
-});
-
-pm.test("Airport data is correct", function () {
-    const res = pm.response.json();
-    pm.expect(res.data.iataCode).to.match(/^BKK\d+$/);
-});
-```
-
----
-
-## 📌 Notes
-
-- Make sure you set `{{token}}` variable in your environment.
-- Use `{{$randomInt}}` for generating random values in Postman body if needed.
-- Set and retrieve dynamic data like `_id` using `pm.environment.set()`.
-
----
-
-© 2025 Manage Flight API - For demo/testing purposes.
