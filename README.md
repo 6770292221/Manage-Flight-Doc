@@ -1,40 +1,49 @@
-# Manage Flight API Collection
+# ✈️ Manage Flight API Documentation
 
-This Postman collection contains a set of APIs for managing airports in a flight booking system. It includes the following endpoints:
+This document provides detailed information on how to use the **Manage Flight API**, including endpoints for creating, retrieving, updating, and deleting airport data using Postman.
 
-## 🔐 Authorization
-All requests require a **Bearer Token** authentication.
+---
 
-Set your token as an environment or collection variable:
+## 🌐 Base URL
 
 ```
-token = your_jwt_token_here
+{{URI}}/api/v1/airport-core-api/airports
 ```
 
-In the Authorization tab, use:
-- Auth Type: Bearer Token
+Environment Variable:
+- `{{URI}}` = Base URL (e.g., `https://flight-booking-airline.onrender.com`)
+- `{{token}}` = Bearer token used in Authorization header
+
+---
+
+## 🔐 Authentication
+
+All endpoints require Bearer Token authentication.
+
+In Postman:
+- Go to `Authorization` tab
+- Set **Auth Type** to `Bearer Token`
 - Token: `{{token}}`
 
----
+Postman will automatically insert the token as:
 
-## 📌 Base URL
-Replace `{{URI}}` with the base domain.
-
-Example:
 ```
-{{URI}} = https://flight-booking-airline.onrender.com
+Authorization: Bearer {{token}}
 ```
 
 ---
 
-## 📤 Endpoints
+## 📬 Endpoints
 
-### ➕ Create Airport
-- **POST** `/api/v1/airport-core-api/airports`
-- **Body**:
+### 1. ➕ Create Airport
+
+**POST** `/airports`
+
+- **Headers**: `Authorization: Bearer {{token}}`
+- **Body (JSON)**:
 ```json
 {
-  "iataCode": "BKK123",
+  "iataCode": "BKK{{randomInt}}",
   "cityName": "Bangkok",
   "airportName": "Suvarnabhumi Airport",
   "country": "Thailand",
@@ -42,32 +51,137 @@ Example:
 }
 ```
 
-### 📝 Update Airport
-- **PATCH** `/api/v1/airport-core-api/airports/:id`
-- **Body**: Same format as POST
-
-### ❌ Delete Airport
-- **DELETE** `/api/v1/airport-core-api/airports/:id`
-
-### 📥 Get All Airports
-- **GET** `/api/v1/airport-core-api/airports`
-
-### 📄 Get Airport By ID
-- **GET** `/api/v1/airport-core-api/airports/:id`
+- **Response**:
+```json
+{
+  "status": "success",
+  "code": "AIR_1007",
+  "message": "Airport created successfully",
+  "data": {
+    "_id": "string",
+    ...
+  }
+}
+```
 
 ---
 
-## ✅ Example Test Script (Postman)
-```javascript
+### 2. 📖 Get All Airports
+
+**GET** `/airports`
+
+- **Headers**: `Authorization: Bearer {{token}}`
+
+- **Response**:
+```json
+{
+  "status": "success",
+  "code": "AIR_1004",
+  "message": "Airports retrieved successfully.",
+  "data": {
+    "items": [ ... ]
+  }
+}
+```
+
+---
+
+### 3. 🔍 Get Airport by ID
+
+**GET** `/airports/:id`
+
+- **Headers**: `Authorization: Bearer {{token}}`
+
+- **Response**:
+```json
+{
+  "status": "success",
+  "code": "AIR_1003",
+  "message": "Airport retrieved successfully.",
+  "data": { ... }
+}
+```
+
+---
+
+### 4. 📝 Update Airport
+
+**PATCH** `/airports/:id`
+
+- **Headers**: `Authorization: Bearer {{token}}`
+- **Body (JSON)**:
+```json
+{
+  "iataCode": "BKK411",
+  "cityName": "Bangkok",
+  "airportName": "Suvarnabhumi Airport",
+  "country": "Thailand",
+  "timezone": "Asia/Bangkok"
+}
+```
+
+- **Response**:
+```json
+{
+  "status": "success",
+  "code": "AIR_1009",
+  "message": "Airport updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### 5. ❌ Delete Airport
+
+**DELETE** `/airports/:id`
+
+- **Headers**: `Authorization: Bearer {{token}}`
+
+- **Response**:
+```json
+{
+  "status": "success",
+  "code": "AIR_1010",
+  "message": "Airport deleted successfully"
+}
+```
+
+---
+
+## 🚀 Running Tests with Newman
+
+To run the collection via Newman CLI:
+
+```bash
+newman run Manage-Flight.postman_collection.json -e environment.json
+```
+
+Ensure `environment.json` contains variables for `{{URI}}` and `{{token}}`.
+
+---
+
+## 🧪 Common Postman Tests (Example)
+
+```js
 pm.test("Status code is 200", function () {
-  pm.response.to.have.status(200);
+    pm.response.to.have.status(200);
+});
+
+pm.test("Airport data is correct", function () {
+    const res = pm.response.json();
+    pm.expect(res.data.iataCode).to.match(/^BKK\d+$/);
 });
 ```
 
 ---
 
-## 🧪 Newman CLI (Optional)
-Run this collection via CLI:
-```
-newman run Manage-Flight.postman_collection.json -e your_env.json
-```
+## 📌 Notes
+
+- Make sure you set `{{token}}` variable in your environment.
+- Use `{{$randomInt}}` for generating random values in Postman body if needed.
+- Set and retrieve dynamic data like `_id` using `pm.environment.set()`.
+
+---
+
+© 2025 Manage Flight API - For demo/testing purposes.
