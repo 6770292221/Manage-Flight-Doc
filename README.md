@@ -1,4 +1,4 @@
-# ✈️ Manage Flight API Documentation
+#  Manage Flight API Documentation
 
 ## 🧾 Base URL  
 `https://flight-booking-airline.onrender.com/api/v1/flight-core-api`
