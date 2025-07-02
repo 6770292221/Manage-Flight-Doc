@@ -1,124 +1,73 @@
-#  Manage Flight API Documentation
+# Manage Flight API Collection
 
-## 🧾 Base URL  
-`https://flight-booking-airline.onrender.com/api/v1/flight-core-api`
+This Postman collection contains a set of APIs for managing airports in a flight booking system. It includes the following endpoints:
+
+## 🔐 Authorization
+All requests require a **Bearer Token** authentication.
+
+Set your token as an environment or collection variable:
+
+```
+token = your_jwt_token_here
+```
+
+In the Authorization tab, use:
+- Auth Type: Bearer Token
+- Token: `{{token}}`
 
 ---
 
-## 📌 1. Create Flight  
-**POST** `/flights`
+## 📌 Base URL
+Replace `{{URI}}` with the base domain.
 
-### 🔸 Request Body (JSON)
-```json
-{
-  "flightNumber": "FD123",
-  "airlineId": "string",
-  "aircraft": "Airbus A320",
-  "departureAirportId": "string",
-  "arrivalAirportId": "string",
-  "departureTime": "2025-08-01T08:00:00Z",
-  "arrivalTime": "2025-08-01T10:00:00Z",
-  "basePrice": 1500,
-  "seatCapacity": 180
-}
+Example:
 ```
-
-### 🔸 Success Response
-**Status Code:** `201 Created`  
-```json
-{
-  "status": "success",
-  "code": "FLIGHT_1001",
-  "message": "Flight created successfully",
-  "data": { ... }
-}
+{{URI}} = https://flight-booking-airline.onrender.com
 ```
 
 ---
 
-## 📌 2. Get All Flights  
-**GET** `/flights`
+## 📤 Endpoints
 
-### 🔸 Query Params (optional)
-- `page` – (default: 1)
-- `limit` – (default: 10)
-
-### 🔸 Success Response
-**Status Code:** `200 OK`  
+### ➕ Create Airport
+- **POST** `/api/v1/airport-core-api/airports`
+- **Body**:
 ```json
 {
-  "status": "success",
-  "code": "FLIGHT_1004",
-  "message": "Flights retrieved successfully.",
-  "data": {
-    "items": [ ... ],
-    "pagination": { ... }
-  }
+  "iataCode": "BKK123",
+  "cityName": "Bangkok",
+  "airportName": "Suvarnabhumi Airport",
+  "country": "Thailand",
+  "timezone": "Asia/Bangkok"
 }
+```
+
+### 📝 Update Airport
+- **PATCH** `/api/v1/airport-core-api/airports/:id`
+- **Body**: Same format as POST
+
+### ❌ Delete Airport
+- **DELETE** `/api/v1/airport-core-api/airports/:id`
+
+### 📥 Get All Airports
+- **GET** `/api/v1/airport-core-api/airports`
+
+### 📄 Get Airport By ID
+- **GET** `/api/v1/airport-core-api/airports/:id`
+
+---
+
+## ✅ Example Test Script (Postman)
+```javascript
+pm.test("Status code is 200", function () {
+  pm.response.to.have.status(200);
+});
 ```
 
 ---
 
-## 📌 3. Get Flight by ID  
-**GET** `/flights/{id}`
-
-### 🔸 Path Parameter
-- `id` – Flight ID
-
-### 🔸 Success Response
-**Status Code:** `200 OK`  
-```json
-{
-  "status": "success",
-  "code": "FLIGHT_1003",
-  "message": "Flight retrieved successfully.",
-  "data": { ... }
-}
+## 🧪 Newman CLI (Optional)
+Run this collection via CLI:
 ```
-
----
-
-## 📌 4. Update Flight  
-**PUT** `/flights/{id}`
-
-### 🔸 Path Parameter
-- `id` – Flight ID
-
-### 🔸 Request Body
-เหมือนกับ `POST /flights`
-
-### 🔸 Success Response
-**Status Code:** `200 OK`  
-```json
-{
-  "status": "success",
-  "code": "FLIGHT_1009",
-  "message": "Flight updated successfully",
-  "data": { ... }
-}
+newman run Manage-Flight.postman_collection.json -e your_env.json
 ```
-
----
-
-## 📌 5. Delete Flight  
-**DELETE** `/flights/{id}`
-
-### 🔸 Path Parameter
-- `id` – Flight ID
-
-### 🔸 Success Response
-**Status Code:** `200 OK`  
-```json
-{
-  "status": "success",
-  "code": "FLIGHT_1010",
-  "message": "Flight deleted successfully"
-}
-```
-
----
-
-## ❌ Error Responses (ทุก endpoint อาจส่งได้)
-- `400 Bad Request` – Missing or invalid input
-- `404 Not Found` – Flight not found
-- `500 Internal Server Error` – Unexpected error
