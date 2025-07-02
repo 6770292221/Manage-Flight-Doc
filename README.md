@@ -1,40 +1,23 @@
-# Manage Flight API Collection
+# Manage Flight API Documentation (Full Version)
 
-This Postman collection contains a set of APIs for managing airports in a flight booking system. It includes the following endpoints:
-
-## 🔐 Authorization
-All requests require a **Bearer Token** authentication.
-
-Set your token as an environment or collection variable:
+## 🧾 Base URL
 
 ```
-token = your_jwt_token_here
-```
-
-In the Authorization tab, use:
-- Auth Type: Bearer Token
-- Token: `{{token}}`
-
----
-
-## 📌 Base URL
-Replace `{{URI}}` with the base domain.
-
-Example:
-```
-{{URI}} = https://flight-booking-airline.onrender.com
+https://flight-booking-airline.onrender.com/api/v1
 ```
 
 ---
 
-## 📤 Endpoints
+## ✈️ Airport API Endpoints
 
-### ➕ Create Airport
-- **POST** `/api/v1/airport-core-api/airports`
-- **Body**:
+### 1. Create Airport
+
+**POST** `/airport-core-api/airports`
+
+**Request Body**
 ```json
 {
-  "iataCode": "BKK123",
+  "iataCode": "BKK753",
   "cityName": "Bangkok",
   "airportName": "Suvarnabhumi Airport",
   "country": "Thailand",
@@ -42,50 +25,103 @@ Example:
 }
 ```
 
-### 📝 Update Airport
-- **PATCH** `/api/v1/airport-core-api/airports/:id`
-- **Body**: Same format as POST
-
-### ❌ Delete Airport
-- **DELETE** `/api/v1/airport-core-api/airports/:id`
-
-### 📥 Get All Airports
-- **GET** `/api/v1/airport-core-api/airports`
-
-### 📄 Get Airport By ID
-- **GET** `/api/v1/airport-core-api/airports/:id`
-
----
-
-## ✅ Example Test Script (Postman)
-```javascript
-pm.test("Status code is 200", function () {
-  pm.response.to.have.status(200);
-});
+**Success Response**
+```json
+{
+  "status": "success",
+  "code": "AIR_1007",
+  "message": "Airport created successfully",
+  "data": {
+    "_id": "xxxxx",
+    ...
+  }
+}
 ```
 
 ---
 
-## 🧪 Newman CLI (Optional)
-Run this collection via CLI:
-```
-newman run Manage-Flight.postman_collection.json -e your_env.json
+### 2. Get All Airports
+
+**GET** `/airport-core-api/airports`
+
+**Success Response**
+```json
+{
+  "status": "success",
+  "code": "AIR_1004",
+  "message": "Airports retrieved successfully.",
+  "data": {
+    "items": [...]
+  }
+}
 ```
 
 ---
 
-## 🛡️ Authentication Flow (Login & OTP Verification)
+### 3. Get Airport by ID
 
-### 🔐 1. Login to Receive OTP
-Send a POST request to initiate the login process. This will trigger the system to send an OTP to the user’s email.
+**GET** `/airport-core-api/airports/:id`
 
-**Request**
+**Success Response**
+```json
+{
+  "id": "xxxxx",
+  "iataCode": "...",
+  ...
+}
 ```
-POST /api/v1/user-core-api/auth/login
-Content-Type: application/json
+
+---
+
+### 4. Update Airport
+
+**PATCH** `/airport-core-api/airports/:id`
+
+**Request Body**
+```json
+{
+  "iataCode": "BKK411",
+  "cityName": "Bangkok",
+  "airportName": "Suvarnabhumi Airport",
+  "country": "Thailand",
+  "timezone": "Asia/Bangkok"
+}
 ```
 
-**Body**
+**Success Response**
+```json
+{
+  "status": "success",
+  "code": "AIR_1009",
+  "message": "Airport updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### 5. Delete Airport
+
+**DELETE** `/airport-core-api/airports/:id`
+
+**Success Response**
+```json
+{
+  "status": "success",
+  "code": "AIR_1010",
+  "message": "Airport deleted successfully"
+}
+```
+
+---
+
+## 🔐 Authentication Flow (Login + OTP)
+
+### 1. Login
+
+**POST** `/user-core-api/auth/login`
+
+**Request Body**
 ```json
 {
   "email": "aphirak_2008@hotmail.com",
@@ -93,7 +129,7 @@ Content-Type: application/json
 }
 ```
 
-**Response**
+**Success Response**
 ```json
 {
   "status": "success",
@@ -108,16 +144,11 @@ Content-Type: application/json
 
 ---
 
-### ✅ 2. Verify OTP to Receive Bearer Token
-Send the received OTP and `userId` to this endpoint to get your `token`.
+### 2. Verify OTP
 
-**Request**
-```
-POST /api/v1/user-core-api/auth/email-otp/verify
-Content-Type: application/json
-```
+**POST** `/user-core-api/auth/email-otp/verify`
 
-**Body**
+**Request Body**
 ```json
 {
   "userId": "6804a760601850de6fc4ede9",
@@ -125,13 +156,13 @@ Content-Type: application/json
 }
 ```
 
-**Response**
+**Success Response**
 ```json
 {
   "status": "success",
   "message": "OTP verified successfully.",
   "data": {
-    "token": "<YOUR_BEARER_TOKEN>",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....",
     "userId": "6804a760601850de6fc4ede9",
     "email": "aphirak_2008@hotmail.com",
     "isAdmin": true,
@@ -140,12 +171,19 @@ Content-Type: application/json
 }
 ```
 
+You can use this `token` in Authorization header for the Airport APIs.
+
 ---
 
-### 📌 Using the Token
-Once you have the `token`, include it as a Bearer Token in the **Authorization** header in subsequent requests.
+## 🛡 Authorization Header Format
 
-**Header Example**
+For secured endpoints (POST, PATCH, DELETE), set header:
+
 ```
-Authorization: Bearer <YOUR_BEARER_TOKEN>
+Authorization: Bearer <token>
+```
+
+Example:
+```bash
+curl --request GET   --url https://flight-booking-airline.onrender.com/api/v1/airport-core-api/airports   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIs...'
 ```
