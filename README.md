@@ -8,7 +8,7 @@ https://flight-booking-airline.onrender.com/api/v1
 
 ---
 
-## ✈️ Airport API Endpoints
+## Airport API Endpoints
 
 ### 1. Create Airport
 
